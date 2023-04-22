@@ -1,6 +1,9 @@
 ## Description
 Colkie Backend Code Challenge
 
+## Decisions
+Documented thought process and decisions: [Link](DECISIONS.md)
+
 ## Installation
 
 ```bash
