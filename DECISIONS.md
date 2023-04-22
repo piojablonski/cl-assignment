@@ -50,5 +50,8 @@ I will Dockerize the application and use a docker-compose to run it together wit
 I will skip certain validations ex. does `room` or `user` exist when sending a message
 
 # Log
-1. I will start by creating `POST /rooms` endpoint verical slice, with provided channel `name` that is required.  I'll skip advanced validation (eg. room name already in use).
-2. Instead of creating tests and controller level I choose to run whole application on module level (`rooms.module.spec`) to properly test REST api statuses and validation.
+- I will start by creating `POST /rooms` endpoint verical slice, with provided channel `name` that is required.  I'll skip advanced validation (eg. room name already in use). 
+- Instead of creating tests and controller level I choose to run whole application on module level (`rooms.module.spec`) to properly test REST api statuses and validation.
+- I assume that I may implement a database repository later, but for now I want to work against an in-memory repository to focus on other logic.
+  That's why I create an abstract class RoomsRepository so that I can seamlessly swap implementations later.
+- Because I will add a reference to RoomsRepository from RoomsService I place it as well in the application layer.
