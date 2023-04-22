@@ -1,4 +1,4 @@
-# Decisions
+# Initial Decisions
 
 ## Rest API
 Planned api shape:
@@ -48,3 +48,7 @@ I will Dockerize the application and use a docker-compose to run it together wit
 
 ## validation
 I will skip certain validations ex. does `room` or `user` exist when sending a message
+
+# Log
+1. I will start by creating `POST /rooms` endpoint verical slice, with provided channel `name` that is required.  I'll skip advanced validation (eg. room name already in use).
+2. Instead of creating tests and controller level I choose to run whole application on module level (`rooms.module.spec`) to properly test REST api statuses and validation.
