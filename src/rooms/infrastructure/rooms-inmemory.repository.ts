@@ -1,5 +1,5 @@
-import { RoomsRepository } from './application/rooms.repository';
-import { Room } from './business/Room';
+import { RoomsRepository } from '../application/rooms.repository';
+import { Room } from '../business/Room';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -11,10 +11,11 @@ export class RoomsInmemoryRepository extends RoomsRepository {
     this._rooms = [];
   }
 
-  createRoom(name: string): void {
+  createRoom(name: string): Promise<void> {
     const room = new Room();
     room.name = name;
     this._rooms.push(room);
+    return Promise.resolve();
   }
 
   public get rooms(): Room[] {

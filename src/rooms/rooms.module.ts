@@ -1,9 +1,9 @@
 import { Module, ValidationPipe } from '@nestjs/common';
-import { RoomsController } from './rooms.controller';
+import { RoomsController } from './infrastructure/rooms.controller';
 import { APP_PIPE } from '@nestjs/core';
 import { RoomsService } from './application/rooms.service';
 import { RoomsRepository } from './application/rooms.repository';
-import { RoomsInmemoryRepository } from './rooms-inmemory.repository';
+import { RoomsInmemoryRepository } from './infrastructure/rooms-inmemory.repository';
 
 @Module({
   controllers: [RoomsController],

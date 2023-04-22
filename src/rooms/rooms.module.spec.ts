@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoomsController } from './rooms.controller';
+import { RoomsController } from './infrastructure/rooms.controller';
 import * as request from 'supertest';
 import { NestApplication } from '@nestjs/core';
 import { HttpStatus } from '@nestjs/common';
 import { RoomsModule } from './rooms.module';
-import { RoomsInmemoryRepository } from './rooms-inmemory.repository';
+import { RoomsInmemoryRepository } from './infrastructure/rooms-inmemory.repository';
 import { RoomsRepository } from './application/rooms.repository';
 import { Room } from './business/Room';
 
@@ -21,21 +21,20 @@ describe('RoomsController', () => {
 
     await app.init();
   });
+  const req = () => request(app.getHttpServer());
 
   describe('POST /rooms', () => {
     it('should return status CREATED', () =>
-      request(app.getHttpServer())
+      req()
         .post('/rooms')
         .send({ name: 'general' })
         .expect(HttpStatus.CREATED));
 
     it('returns 400 if name is not provided', () =>
-      request(app.getHttpServer())
-        .post('/rooms')
-        .expect(HttpStatus.BAD_REQUEST));
+      req().post('/rooms').expect(HttpStatus.BAD_REQUEST));
 
     it('saves new room in a store', async () => {
-      await request(app.getHttpServer())
+      await req()
         .post('/rooms')
         .send({ name: 'general' })
         .expect(HttpStatus.CREATED);
