@@ -55,3 +55,4 @@ I will skip certain validations ex. does `room` or `user` exist when sending a m
 - I assume that I may implement a database repository later, but for now I want to work against an in-memory repository to focus on other logic.
   That's why I create an abstract class RoomsRepository so that I can seamlessly swap implementations later.
 - Because I will add a reference to RoomsRepository from RoomsService I place it as well in the application layer.
+- The documentation will be useful during the development, so I add it now, and I will extend it incrementally while adding new endpoints.
