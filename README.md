@@ -23,6 +23,10 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+- application is available user: http://localhost:3000
+- api specification is available on: http://localhost:3000/api
+
+
 ## Test
 
 ```bash
