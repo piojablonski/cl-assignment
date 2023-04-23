@@ -1,6 +1,7 @@
 import { RoomsRepository } from '../application/rooms.repository';
 import { Room } from '../business/Room';
 import { Injectable, Optional } from '@nestjs/common';
+import { Message } from '../business/Message';
 
 @Injectable()
 export class RoomsInmemoryRepository extends RoomsRepository {
@@ -26,5 +27,11 @@ export class RoomsInmemoryRepository extends RoomsRepository {
     const room = this._rooms.find((r) => r.name === roomName);
     room.users.push(userName);
     return Promise.resolve();
+  }
+
+  getMessages(roomName: string): Promise<Message[]> {
+    return Promise.resolve(
+      this._rooms.find((r) => r.name === roomName)?.messages.slice(0, 10),
+    );
   }
 }

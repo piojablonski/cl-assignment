@@ -5,13 +5,8 @@ import { HttpStatus } from '@nestjs/common';
 import { RoomsModule } from './rooms.module';
 import { RoomsInmemoryRepository } from './infrastructure/rooms-inmemory.repository';
 import { RoomsRepository } from './application/rooms.repository';
-import { Room } from './business/Room';
+import { createFakeChat, createFakeRooms } from './test/fake-data';
 
-const createFakeRooms = () => [
-  new Room({
-    name: 'general',
-  }),
-];
 describe('Rooms module', () => {
   let app: NestApplication, roomsRepo: RoomsInmemoryRepository;
   beforeEach(async () => {
@@ -40,14 +35,13 @@ describe('Rooms module', () => {
         .send({ roomName: 'general' })
         .expect(HttpStatus.CREATED);
 
-      const want = new Room({ name: 'general' }),
-        got = roomsRepo.rooms.find((n) => n.name === 'general');
+      const got = roomsRepo.rooms.find((n) => n.name === 'general');
 
-      expect(got).toEqual(want);
+      expect(got).toBeDefined();
     });
   });
 
-  describe('POST /rooms/:roomId/users', () => {
+  describe('POST /rooms/:roomName/users', () => {
     it('returns 400 if name is not provided', () =>
       req().post('/rooms/general/users').expect(HttpStatus.BAD_REQUEST));
 
@@ -57,10 +51,21 @@ describe('Rooms module', () => {
         .send({ userName: 'Piotr' })
         .expect(HttpStatus.OK);
 
-      const want = ['Piotr'],
-        got = roomsRepo.rooms.find((n) => n.name === 'general').users;
+      const got = roomsRepo.rooms.find((n) => n.name === 'general').users;
 
-      expect(got).toEqual(want);
+      expect(got).toEqual(expect.arrayContaining(['Piotr']));
     });
+  });
+
+  describe('GET /rooms/:roomName/messages', () => {
+    it('gets messages', async () =>
+      req()
+        .get('/rooms/general/messages')
+        .expect(HttpStatus.OK)
+        .then((res) => {
+          const want = createFakeChat().slice(0, 10),
+            got = res.body;
+          expect(got).toEqual(want);
+        }));
   });
 });

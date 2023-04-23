@@ -12,4 +12,8 @@ export class RoomsService {
   async addUserToRoom(roomName, userName: string) {
     await this.roomRepo.addUserToRoom(roomName, userName);
   }
+
+  getMessages(roomName) {
+    return this.roomRepo.getMessages(roomName);
+  }
 }

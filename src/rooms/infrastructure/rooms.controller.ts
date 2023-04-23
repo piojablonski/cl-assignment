@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -41,5 +42,12 @@ export class RoomsController {
     @Body() body: AddUserToRoomRequestDto,
   ) {
     await this.roomsService.addUserToRoom(roomName, body.userName);
+  }
+
+  @Get(':roomName/messages')
+  @ApiParam({ name: 'roomName', example: 'dev team' })
+  @ApiOperation({ summary: 'Get latest 10 message on a channel' })
+  getMessages(@Param('roomName') roomName) {
+    return this.roomsService.getMessages(roomName);
   }
 }

@@ -58,3 +58,5 @@ I will skip certain validations ex. does `room` or `user` exist when sending a m
 - The documentation will be useful during the development, so I add it now, and I will extend it incrementally while adding new endpoints.
 - Create add user to a room endpoint: POST /rooms/:roomId/users
 - After consideration, I have decided to use the current HTTP method of POST for the /rooms/:roomId/users endpoint. Instead of the default success status code of 201 CREATED, I will modify it to 200 OK. The program does not create a new entity at this endpoint, it also does not directly modify the User entity. Therefore, using PUT or PATCH methods does not seem to be an appropriate fit.
+- As a chat room may have large number of messages in it's history, I add a limit of 10 messages that will be fetched by this endpoint
+- I create a Message business object, author and message content together
