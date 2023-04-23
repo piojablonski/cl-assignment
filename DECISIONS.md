@@ -3,12 +3,12 @@
 ## Rest API
 Planned api shape:
 
-| HTTP Method | Endpoint                       | Description                                        |
-| ----------- | -------------------------------| ---------------------------------------------------|
-| POST        | /rooms                         | Creates a new chat room                            |
-| POST        | /rooms/:roomId/users           | Adds a user to a chat room                         |
-| POST        | /rooms/:roomId/messages        | Sends a message to a chat room                     |
-| GET         | /rooms/:roomId/messages        | Gets the latest messages from a chat room          |
+| HTTP Method | Endpoint                  | Description                                        |
+|------------|---------------------------| ---------------------------------------------------|
+| POST       | /rooms                    | Creates a new chat room                            |
+| POST       | /rooms/:roomName/users    | Adds a user to a chat room                         |
+| POST       | /rooms/:roomName/messages | Sends a message to a chat room                     |
+| GET        | /rooms/:roomName/messages | Gets the latest messages from a chat room          |
 
 ## Architecture and files organisation
 
@@ -56,3 +56,5 @@ I will skip certain validations ex. does `room` or `user` exist when sending a m
   That's why I create an abstract class RoomsRepository so that I can seamlessly swap implementations later.
 - Because I will add a reference to RoomsRepository from RoomsService I place it as well in the application layer.
 - The documentation will be useful during the development, so I add it now, and I will extend it incrementally while adding new endpoints.
+- Create add user to a room endpoint: POST /rooms/:roomId/users
+- After consideration, I have decided to use the current HTTP method of POST for the /rooms/:roomId/users endpoint. Instead of the default success status code of 201 CREATED, I will modify it to 200 OK. The program does not create a new entity at this endpoint, it also does not directly modify the User entity. Therefore, using PUT or PATCH methods does not seem to be an appropriate fit.

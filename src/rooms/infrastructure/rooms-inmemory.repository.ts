@@ -1,14 +1,18 @@
 import { RoomsRepository } from '../application/rooms.repository';
 import { Room } from '../business/Room';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 
 @Injectable()
 export class RoomsInmemoryRepository extends RoomsRepository {
   private readonly _rooms: Room[];
 
-  constructor() {
+  constructor(@Optional() fakeRooms: Room[] = []) {
     super();
-    this._rooms = [];
+    this._rooms = fakeRooms;
+  }
+
+  public get rooms(): Room[] {
+    return this._rooms;
   }
 
   createRoom(name: string): Promise<void> {
@@ -18,7 +22,9 @@ export class RoomsInmemoryRepository extends RoomsRepository {
     return Promise.resolve();
   }
 
-  public get rooms(): Room[] {
-    return this._rooms;
+  addUserToRoom(roomName, userName: string): Promise<void> {
+    const room = this._rooms.find((r) => r.name === roomName);
+    room.users.push(userName);
+    return Promise.resolve();
   }
 }

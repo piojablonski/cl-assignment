@@ -8,4 +8,8 @@ export class RoomsService {
   async createRoom(name: string) {
     await this.roomRepo.createRoom(name);
   }
+
+  async addUserToRoom(roomName, userName: string) {
+    await this.roomRepo.addUserToRoom(roomName, userName);
+  }
 }
