@@ -18,6 +18,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AddUserToRoomRequestDto } from './add-user-to-room-request.dto';
+import { GetRoomMessagesResponseDto } from './get-room-messages-response.dto';
 
 @Controller('rooms')
 @ApiTags('rooms')
@@ -47,7 +48,13 @@ export class RoomsController {
   @Get(':roomName/messages')
   @ApiParam({ name: 'roomName', example: 'dev team' })
   @ApiOperation({ summary: 'Get latest 10 message on a channel' })
-  getMessages(@Param('roomName') roomName) {
-    return this.roomsService.getMessages(roomName);
+  getMessages(
+    @Param('roomName') roomName,
+  ): Promise<GetRoomMessagesResponseDto[]> {
+    return this.roomsService
+      .getMessages(roomName)
+      .then((messages) =>
+        messages.map((m) => new GetRoomMessagesResponseDto(m)),
+      );
   }
 }

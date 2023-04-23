@@ -50,6 +50,7 @@ I will Dockerize the application and use a docker-compose to run it together wit
 I will skip certain validations ex. does `room` or `user` exist when sending a message
 
 # Log
+
 - I will start by creating `POST /rooms` endpoint verical slice, with provided channel `name` that is required.  I'll skip advanced validation (eg. room name already in use). 
 - Instead of creating tests and controller level I choose to run whole application on module level (`rooms.module.spec`) to properly test REST api statuses and validation.
 - I assume that I may implement a database repository later, but for now I want to work against an in-memory repository to focus on other logic.
@@ -60,3 +61,4 @@ I will skip certain validations ex. does `room` or `user` exist when sending a m
 - After consideration, I have decided to use the current HTTP method of POST for the /rooms/:roomId/users endpoint. Instead of the default success status code of 201 CREATED, I will modify it to 200 OK. The program does not create a new entity at this endpoint, it also does not directly modify the User entity. Therefore, using PUT or PATCH methods does not seem to be an appropriate fit.
 - As a chat room may have large number of messages in it's history, I add a limit of 10 messages that will be fetched by this endpoint
 - I create a Message business object, author and message content together
+- I want to add details to response description in OpenAPI but I don't want to create references to Nest framework decorators in business layer. Ideally business layer shouldn't be aware of Nest framework at all.
