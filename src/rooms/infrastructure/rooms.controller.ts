@@ -8,7 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { RoomsService } from '../application/rooms.service';
-import { CreateRoomRequestDto } from './create-room-request.dto';
+import { CreateRoomRequestDto } from './dto/create-room-request.dto';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -17,9 +17,9 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { AddUserToRoomRequestDto } from './add-user-to-room-request.dto';
-import { GetRoomMessagesResponseDto } from './get-room-messages-response.dto';
-import { SendMessageToRoomRequestDto } from './send-message-to-room-request.dto';
+import { AddUserToRoomRequestDto } from './dto/add-user-to-room-request.dto';
+import { GetRoomMessagesResponseDto } from './dto/get-room-messages-response.dto';
+import { SendMessageToRoomRequestDto } from './dto/send-message-to-room-request.dto';
 import { Message } from '../business/Message';
 
 @Controller('rooms')

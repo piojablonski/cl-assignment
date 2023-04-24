@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Message } from '../business/Message';
+import { Message } from '../../business/Message';
 
 export class GetRoomMessagesResponseDto {
   @ApiProperty({ example: 'Bob' })

@@ -64,10 +64,12 @@ describe('Rooms module', () => {
         .expect(HttpStatus.OK)
         .then((res) => {
           const chatMessages = createFakeChat();
+
           const want = chatMessages
-              .slice(chatMessages.length - 10)
-              .map((m) => m.content),
-            got = res.body.map((m) => m.content);
+            .slice(chatMessages.length - 10)
+            .map((m) => m.content);
+          const got = res.body.map((m) => m.content);
+
           expect(got).toEqual(want);
           expect(got).toHaveLength(10);
         }));
@@ -84,6 +86,7 @@ describe('Rooms module', () => {
       const got = roomsRepo.rooms
         .find((s) => s.name === 'general')
         .messages.map((m) => m.content);
+
       expect(got).toEqual(expect.arrayContaining([content]));
     });
 
