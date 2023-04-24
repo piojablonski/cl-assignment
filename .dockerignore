@@ -1,0 +1,22 @@
+.git
+.gitignore
+.dockerignore
+
+# Build dependencies
+dist
+node_modules
+coverage
+
+# Environment (contains sensitive data)
+.env
+
+# Files not required for production
+.editorconfig
+Dockerfile
+README.md
+tslint.json
+nodemon.json
+npm-debug.log
+DECISIONS.md
+.DS_Store
+.thumbsdb
