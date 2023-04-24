@@ -1,5 +1,5 @@
 ## Description
-Colkie Backend Code Challenge
+Code Challenge
 
 ## Decisions
 Documented thought process and decisions: [Link](DECISIONS.md)
@@ -52,10 +52,4 @@ $ docker pull redis:7.0.11
 
 # unit tests
 $ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
