@@ -50,15 +50,62 @@ I will Dockerize the application and use a docker-compose to run it together wit
 I will skip certain validations ex. does `room` or `user` exist when sending a message
 
 # Log
+it's an extract from git log, I hope it documents well the decisions I made during the development.
+```bash
+git log --reverse --pretty=format:"%m %ah: %s %n %b"
+```
 
-- I will start by creating `POST /rooms` endpoint verical slice, with provided channel `name` that is required.  I'll skip advanced validation (eg. room name already in use). 
-- Instead of creating tests and controller level I choose to run whole application on module level (`rooms.module.spec`) to properly test REST api statuses and validation.
-- I assume that I may implement a database repository later, but for now I want to work against an in-memory repository to focus on other logic.
-  That's why I create an abstract class RoomsRepository so that I can seamlessly swap implementations later.
-- Because I will add a reference to RoomsRepository from RoomsService I place it as well in the application layer.
-- The documentation will be useful during the development, so I add it now, and I will extend it incrementally while adding new endpoints.
+- Bootstrap nest application
+- Document initial architectural decisions
+- Create a scaffold of POST /rooms endpoint with tests and validation
+- Add ability to store rooms in memory
+  - I assume that I may implement a database repository later, but for now I want to work against an in-memory repository to focus on other logic.
+    That's why I create an abstract class RoomsRepository so that I can seamlessly swap implementations later.
+  - Because I will add a reference to RoomsRepository from RoomsService I place it as well in the application layer.
+
+- Refactor code, "promisify" rooms repository
+- Add healthz endpoint
+- Add OpenAPI documentation
+
+  - The documentation will be useful during the development, so I add it now, and I will extend it incrementally while adding new endpoints.
+
+- Add dist to .gitignore
 - Create add user to a room endpoint: POST /rooms/:roomId/users
-- After consideration, I have decided to use the current HTTP method of POST for the /rooms/:roomId/users endpoint. Instead of the default success status code of 201 CREATED, I will modify it to 200 OK. The program does not create a new entity at this endpoint, it also does not directly modify the User entity. Therefore, using PUT or PATCH methods does not seem to be an appropriate fit.
-- As a chat room may have large number of messages in it's history, I add a limit of 10 messages that will be fetched by this endpoint
-- I create a Message business object, author and message content together
-- I want to add details to response description in OpenAPI but I don't want to create references to Nest framework decorators in business layer. Ideally business layer shouldn't be aware of Nest framework at all.
+  - After consideration, I have decided to use the current HTTP method of POST for the /rooms/:roomId/users endpoint. Instead of the default success status code of 201 CREATED, I will modify it to 200 OK. The program does not create a new entity at this endpoint, it also does not directly modify the User entity. Therefore, using PUT or PATCH methods does not seem to be an appropriate fit.
+
+- Make DTOs property names unambiguous, small improvement for code readability, remove redundant tests
+- Add endpoint GET /rooms/:roomName/messages that fetches latest messages
+  - As a chat room may have large number of messages in it's history, I add a limit of 10 messages that will be fetched by this endpoint
+  - I create a Message business object, author and message content together
+
+- Separate GET /rooms/:roomName/messages response from business entity
+  - I want to add details to response description in OpenAPI but I don't want to create references to Nest framework decorators in business layer. Ideally business layer shouldn't be aware of Nest framework at all.
+
+- Correct a bug, latest returned messages are in wrong order
+  - Decided to add a date field to a Message entity to be able to sort by it
+
+- Add send message endpoint scaffold
+  - for now I'm adding a version that save messages directly to repository
+
+- Refactor, move dtos to its own directory
+
+- Dockerize the application
+
+  - I followed some best practices for production grade docker build:
+    - keeping the specific version of images to make sure that every build is identical
+    - using alpine node image to optimize size
+    - setting node env to PRODUCTION
+    - cleaning development dependencies after build
+
+- Create testing infrastructure for redis
+  - I want to be able to test queuCoring messages with a real database, I will use TestContainers for that.
+
+- Use queue in sendMessage endpoint
+  - Controller.sendMessageToRoom method is responsible only for adding a message to a Queue, which is a cheap operation. RoomsQueueProcessor is responsible listening to SendMessageEvent and for saving a message to actual chatroom and any other heavy lifting that would normally be in production application (validation etc.). This paves the way to horizontally scale message processing.
+
+- Add possibility to configure Redis connection
+
+- Add docker compose
+
+- Implement an example of real database rooms repository
+  - I'm not claiming that it's the best choice for data storage for this application, but it does the job and proves the point that it's easy to swap databases when the application is well-structured.

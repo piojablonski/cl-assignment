@@ -1,8 +1,6 @@
-## Description
-Code Challenge
-
-## Decisions
-Documented thought process and decisions: [Link](DECISIONS.md)
+## Decisions and thought process
+- I documented initial assumptions and decisions here: [Link](DECISIONS.md)
+- or in git log `git log --reverse --pretty=format:"%m %ah: %s %n %b"`
 
 ## Installation
 
@@ -13,12 +11,10 @@ $ npm install
 ## Building and running for development
 
 ```bash
-
-
 # run a database 
 $ docker run -d -p 6379:6379 redis:7.0.11
 
-# create .env file, modify if necesary
+# create .env file, modify if necessary
 $ cp env.example .env
 
 # development
