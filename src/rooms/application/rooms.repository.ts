@@ -1,7 +1,7 @@
 import { Message } from '../business/Message';
 
 export abstract class RoomsRepository {
-  public abstract getMessages(roomName: string): Promise<Message[]>;
+  public abstract getLatestMessages(roomName: string): Promise<Message[]>;
 
   public abstract createRoom(name: string): Promise<void>;
 

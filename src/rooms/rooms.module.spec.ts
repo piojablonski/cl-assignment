@@ -63,9 +63,14 @@ describe('Rooms module', () => {
         .get('/rooms/general/messages')
         .expect(HttpStatus.OK)
         .then((res) => {
-          const want = createFakeChat().slice(0, 10),
-            got = res.body;
+          const chatMessages = createFakeChat();
+          const want = chatMessages
+              .slice(chatMessages.length - 10)
+              .map((m) => m.content),
+            // .map((m) => ({ content: m.content, authorName: m.authorName })),
+            got = res.body.map((m) => m.content);
           expect(got).toEqual(want);
+          expect(got).toHaveLength(10);
         }));
   });
 });

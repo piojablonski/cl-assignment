@@ -13,7 +13,7 @@ export class RoomsService {
     await this.roomRepo.addUserToRoom(roomName, userName);
   }
 
-  getMessages(roomName) {
-    return this.roomRepo.getMessages(roomName);
+  getLatestMessages(roomName) {
+    return this.roomRepo.getLatestMessages(roomName);
   }
 }

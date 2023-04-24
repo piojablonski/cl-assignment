@@ -48,11 +48,11 @@ export class RoomsController {
   @Get(':roomName/messages')
   @ApiParam({ name: 'roomName', example: 'dev team' })
   @ApiOperation({ summary: 'Get latest 10 message on a channel' })
-  getMessages(
+  getLatestMessages(
     @Param('roomName') roomName,
   ): Promise<GetRoomMessagesResponseDto[]> {
     return this.roomsService
-      .getMessages(roomName)
+      .getLatestMessages(roomName)
       .then((messages) =>
         messages.map((m) => new GetRoomMessagesResponseDto(m)),
       );

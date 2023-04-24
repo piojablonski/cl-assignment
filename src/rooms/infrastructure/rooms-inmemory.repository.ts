@@ -29,9 +29,10 @@ export class RoomsInmemoryRepository extends RoomsRepository {
     return Promise.resolve();
   }
 
-  getMessages(roomName: string): Promise<Message[]> {
-    return Promise.resolve(
-      this._rooms.find((r) => r.name === roomName)?.messages.slice(0, 10),
-    );
+  getLatestMessages(roomName: string): Promise<Message[]> {
+    const msgs = this._rooms
+      .find((r) => r.name === roomName)
+      ?.messages.sort((a, b) => (a.date > b.date ? 1 : -1));
+    return Promise.resolve(msgs.slice(msgs.length - 10));
   }
 }
