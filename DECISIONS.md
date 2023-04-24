@@ -1,6 +1,6 @@
-# Initial Decisions
+# initial decisions
 
-## Rest API
+## rest API
 Planned api shape:
 
 | HTTP Method | Endpoint                  | Description                                        |
@@ -10,7 +10,7 @@ Planned api shape:
 | POST       | /rooms/:roomName/messages | Sends a message to a chat room                     |
 | GET        | /rooms/:roomName/messages | Gets the latest messages from a chat room          |
 
-## Architecture and files organisation
+## architecture and files organisation
 
 ### files, modules, layers
 I will use a single Nest module `rooms` containing directories for each layer:
@@ -28,7 +28,7 @@ I will follow the rule of dependencies:
 I will follow standard proposed by Nest.js. I would personally prefer to use some `Maybe`/`Result` type (ex. https://true-myth.js.org/)  or follow pattern similar to one in `golang` but in that case, there is an established well supported pattern in the framework and going against it may be cumbersome.
 
 ## scalability
-Given the importance of scaling at Colkie, I will build a foundation to make application horizontally scalable.
+Given the importance of scaling for client's project, I will build a foundation to make application horizontally scalable.
 Assuming that endpoint `POST /rooms/:roomId/messages` will have the highest load of requests in a future,
 instead of writing chat messages directly to database, I will queue the messages for processing.
 That way we can potentially add more processor instances if necessary.
@@ -39,7 +39,7 @@ To implement that I will use Nest.js bull module.
 I will initially use inmemory storage for rooms/user/rooms entities, it should make development faster.
 I will write also write it against an interface so that it should be easy to implement actual repository when the time comes for it.
 
-## Testing strategy
+## testing strategy
 - I will be using e2e tests with Redis running in TestContainer, to help me during the write time.
 - In such "small" assignment it is difficult to properly to balance test pyramid so there will probably be more e2e tests then I would create in real production app.
 
@@ -49,7 +49,7 @@ I will Dockerize the application and use a docker-compose to run it together wit
 ## validation
 I will skip certain validations ex. does `room` or `user` exist when sending a message
 
-# Log
+# log - decisions made during the development
 it's an extract from git log, I hope it documents well the decisions I made during the development.
 ```bash
 git log --reverse --pretty=format:"%m %ah: %s %n %b"

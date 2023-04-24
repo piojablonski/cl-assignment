@@ -1,6 +1,10 @@
 ## Decisions and thought process
-- I documented initial assumptions and decisions here: [Link](DECISIONS.md)
-- or in git log `git log --reverse --pretty=format:"%m %ah: %s %n %b"`
+- I documented decisions [here](DECISIONS.md) in two parts:
+  - initial decisions made before I started the assignment 
+  - log the decisions made while writing the assignment available also through 
+  ```
+  git log --reverse --pretty=format:"%m %ah: %s %n %b"
+  ```
 
 ## Installation
 
