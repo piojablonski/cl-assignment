@@ -9,23 +9,6 @@ import { createFakeChat, createFakeRooms } from './test/fake-data';
 import { BullModule } from '@nestjs/bull';
 import { GenericContainer, StartedTestContainer } from 'testcontainers';
 describe('Rooms module', () => {
-  let app: NestApplication, roomsRepo: RoomsInmemoryRepository;
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [RoomsModule],
-    })
-      .overrideProvider(RoomsRepository)
-      .useValue(new RoomsInmemoryRepository(createFakeRooms()))
-      .compile();
-
-    roomsRepo = module.get<RoomsInmemoryRepository>(RoomsRepository);
-
-    app = module.createNestApplication();
-
-    await app.init();
-  });
-  const req = () => request(app.getHttpServer());
-
   describe('POST /rooms', () => {
     it('returns 400 if room name is not provided', () =>
       req().post('/rooms').expect(HttpStatus.BAD_REQUEST));
@@ -75,8 +58,48 @@ describe('Rooms module', () => {
           expect(got).toHaveLength(10);
         }));
   });
+
+  let app: NestApplication, roomsRepo: RoomsInmemoryRepository;
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [RoomsModule],
+    })
+      .overrideProvider(RoomsRepository)
+      .useValue(new RoomsInmemoryRepository(createFakeRooms()))
+      .compile();
+
+    roomsRepo = module.get<RoomsInmemoryRepository>(RoomsRepository);
+
+    app = module.createNestApplication();
+
+    await app.init();
+  });
+  const req = () => request(app.getHttpServer());
+  afterEach(async () => {
+    await app.close();
+  });
 });
 describe('POST /rooms/:roomName/messages', () => {
+  it('has status OK if content exists, saves it to database', async () => {
+    const content = 'Come back Alice!!!';
+    return await req()
+      .post('/rooms/general/messages')
+      .send({ content, userName: 'Bob' })
+      .expect(HttpStatus.CREATED)
+      .then(() => {
+        const got = roomsRepo.rooms
+          .find((s) => s.name === 'general')
+          .messages.map((m) => m.content);
+        expect(got).toEqual(expect.arrayContaining([content]));
+      });
+  });
+
+  it('has status BAD REQUEST in case userName is missing', () =>
+    req()
+      .post('/rooms/general/messages')
+      .send({ content: 'Hi Alice' })
+      .expect(HttpStatus.BAD_REQUEST));
+
   let app: NestApplication, roomsRepo: RoomsInmemoryRepository;
   let redisContainer: StartedTestContainer;
   beforeAll(async () => {
@@ -108,27 +131,9 @@ describe('POST /rooms/:roomName/messages', () => {
     await app.init();
   });
   const req = () => request(app.getHttpServer());
-
-  it('has status OK if content exists, saves it to database', async () => {
-    const content = 'Come back Alice!!!';
-    return await req()
-      .post('/rooms/general/messages')
-      .send({ content, userName: 'Bob' })
-      .expect(HttpStatus.CREATED)
-      .then(() => {
-        const got = roomsRepo.rooms
-          .find((s) => s.name === 'general')
-          .messages.map((m) => m.content);
-        expect(got).toEqual(expect.arrayContaining([content]));
-      });
+  afterEach(async () => {
+    await app.close();
   });
-
-  it('has status BAD REQUEST in case userName is missing', () =>
-    req()
-      .post('/rooms/general/messages')
-      .send({ content: 'Hi Alice' })
-      .expect(HttpStatus.BAD_REQUEST));
-
   afterAll(async () => {
     await redisContainer.stop();
   });
