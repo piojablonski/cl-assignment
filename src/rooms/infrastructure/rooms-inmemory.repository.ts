@@ -16,6 +16,10 @@ export class RoomsInmemoryRepository extends RoomsRepository {
     return this._rooms;
   }
 
+  private findRoomByName(n: string) {
+    return this._rooms.find((r) => r.name === n);
+  }
+
   createRoom(name: string): Promise<void> {
     const room = new Room();
     room.name = name;
@@ -24,15 +28,21 @@ export class RoomsInmemoryRepository extends RoomsRepository {
   }
 
   addUserToRoom(roomName, userName: string): Promise<void> {
-    const room = this._rooms.find((r) => r.name === roomName);
+    const room = this.findRoomByName(roomName);
     room.users.push(userName);
     return Promise.resolve();
   }
 
   getLatestMessages(roomName: string): Promise<Message[]> {
-    const msgs = this._rooms
-      .find((r) => r.name === roomName)
-      ?.messages.sort((a, b) => (a.date > b.date ? 1 : -1));
+    const msgs = this.findRoomByName(roomName)?.messages.sort((a, b) =>
+      a.date > b.date ? 1 : -1,
+    );
     return Promise.resolve(msgs.slice(msgs.length - 10));
+  }
+
+  saveMessageToRoom(roomName, message: Message): Promise<void> {
+    const room = this.findRoomByName(roomName);
+    room.messages.push(message);
+    return Promise.resolve();
   }
 }

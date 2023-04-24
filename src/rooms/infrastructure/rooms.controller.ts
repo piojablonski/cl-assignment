@@ -19,6 +19,8 @@ import {
 } from '@nestjs/swagger';
 import { AddUserToRoomRequestDto } from './add-user-to-room-request.dto';
 import { GetRoomMessagesResponseDto } from './get-room-messages-response.dto';
+import { SendMessageToRoomRequestDto } from './send-message-to-room-request.dto';
+import { Message } from '../business/Message';
 
 @Controller('rooms')
 @ApiTags('rooms')
@@ -46,7 +48,7 @@ export class RoomsController {
   }
 
   @Get(':roomName/messages')
-  @ApiParam({ name: 'roomName', example: 'dev team' })
+  @ApiParam({ name: 'roomName', example: 'general' })
   @ApiOperation({ summary: 'Get latest 10 message on a channel' })
   getLatestMessages(
     @Param('roomName') roomName,
@@ -56,5 +58,20 @@ export class RoomsController {
       .then((messages) =>
         messages.map((m) => new GetRoomMessagesResponseDto(m)),
       );
+  }
+
+  @Post(':roomName/messages')
+  @ApiParam({ name: 'roomName', example: 'general' })
+  @ApiOperation({ summary: 'Sends a message to a room' })
+  @ApiBadRequestResponse()
+  @ApiCreatedResponse()
+  async sendMessageToRoom(
+    @Param('roomName') roomName,
+    @Body() body: SendMessageToRoomRequestDto,
+  ) {
+    await this.roomsService.saveMessageToRoom(
+      roomName,
+      Message.create({ authorName: body.userName, content: body.content }),
+    );
   }
 }

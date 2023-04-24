@@ -67,10 +67,30 @@ describe('Rooms module', () => {
           const want = chatMessages
               .slice(chatMessages.length - 10)
               .map((m) => m.content),
-            // .map((m) => ({ content: m.content, authorName: m.authorName })),
             got = res.body.map((m) => m.content);
           expect(got).toEqual(want);
           expect(got).toHaveLength(10);
         }));
+  });
+
+  describe('POST /rooms/:roomName/messages', () => {
+    it('has status OK if content exists, saves it to database', async () => {
+      const content = 'Come back Alice!!!';
+      await req()
+        .post('/rooms/general/messages')
+        .send({ content, userName: 'Bob' })
+        .expect(HttpStatus.CREATED);
+
+      const got = roomsRepo.rooms
+        .find((s) => s.name === 'general')
+        .messages.map((m) => m.content);
+      expect(got).toEqual(expect.arrayContaining([content]));
+    });
+
+    it('has status BAD REQUEST in case userName is missing', () =>
+      req()
+        .post('/rooms/general/messages')
+        .send({ content: 'Hi Alice' })
+        .expect(HttpStatus.BAD_REQUEST));
   });
 });
