@@ -115,13 +115,13 @@ describe('POST /rooms/:roomName/messages', () => {
     await req()
       .post('/rooms/general/messages')
       .send({ content, userName: 'Bob' })
-      .expect(HttpStatus.CREATED);
-
-    const got = roomsRepo.rooms
-      .find((s) => s.name === 'general')
-      .messages.map((m) => m.content);
-
-    expect(got).toEqual(expect.arrayContaining([content]));
+      .expect(HttpStatus.CREATED)
+      .then(() => {
+        const got = roomsRepo.rooms
+          .find((s) => s.name === 'general')
+          .messages.map((m) => m.content);
+        expect(got).toEqual(expect.arrayContaining([content]));
+      });
   });
 
   it('has status BAD REQUEST in case userName is missing', () =>

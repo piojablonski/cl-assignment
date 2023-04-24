@@ -20,12 +20,19 @@ import {
 import { AddUserToRoomRequestDto } from './dto/add-user-to-room-request.dto';
 import { GetRoomMessagesResponseDto } from './dto/get-room-messages-response.dto';
 import { SendMessageToRoomRequestDto } from './dto/send-message-to-room-request.dto';
-import { Message } from '../business/Message';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+import { Queues } from '../application/queues';
+import { SendMessageEvent } from '../application/send-message-event';
 
 @Controller('rooms')
 @ApiTags('rooms')
 export class RoomsController {
-  constructor(private roomsService: RoomsService) {}
+  constructor(
+    private roomsService: RoomsService,
+    @InjectQueue(Queues.MESSAGES)
+    private readonly messageQueue: Queue<SendMessageEvent>,
+  ) {}
   @Post()
   @ApiOperation({ summary: 'Create a chat room' })
   @ApiBadRequestResponse()
@@ -66,12 +73,15 @@ export class RoomsController {
   @ApiBadRequestResponse()
   @ApiCreatedResponse()
   async sendMessageToRoom(
-    @Param('roomName') roomName,
+    @Param('roomName') roomName: string,
     @Body() body: SendMessageToRoomRequestDto,
   ) {
-    await this.roomsService.saveMessageToRoom(
+    const job = await this.messageQueue.add({
       roomName,
-      Message.create({ authorName: body.userName, content: body.content }),
-    );
+      content: body.content,
+      authorName: body.userName,
+    });
+
+    await job.finished();
   }
 }
