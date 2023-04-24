@@ -13,6 +13,14 @@ $ npm install
 ## Building and running for development
 
 ```bash
+
+
+# run a database 
+$ docker run -d -p 6379:6379 redis:7.0.11
+
+# create .env file, modify if necesary
+$ cp env.example .env
+
 # development
 $ npm run start
 
@@ -38,10 +46,12 @@ docker run -d -p 3000:3000 colkie-assignment
 curl http://localhost:3000/healthz
 ```
 
-
-## Running tests
+## Running automated tests
 
 ```bash
+# download redis image before running the tests to avoid timeout
+$ docker pull redis:7.0.11
+
 # unit tests
 $ npm run test
 

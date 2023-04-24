@@ -14,6 +14,7 @@ packages/**/*.js
 dist
 
 # misc
+.env
 .DS_Store
 lerna-debug.log
 npm-debug.log
@@ -25,3 +26,4 @@ yarn-error.log
 
 .npmrc
 pnpm-lock.yaml
+

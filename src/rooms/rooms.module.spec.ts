@@ -8,7 +8,6 @@ import { RoomsRepository } from './application/rooms.repository';
 import { createFakeChat, createFakeRooms } from './test/fake-data';
 import { BullModule } from '@nestjs/bull';
 import { GenericContainer, StartedTestContainer } from 'testcontainers';
-
 describe('Rooms module', () => {
   let app: NestApplication, roomsRepo: RoomsInmemoryRepository;
   beforeEach(async () => {
@@ -28,7 +27,7 @@ describe('Rooms module', () => {
   const req = () => request(app.getHttpServer());
 
   describe('POST /rooms', () => {
-    it('returns 400 if name is not provided', () =>
+    it('returns 400 if room name is not provided', () =>
       req().post('/rooms').expect(HttpStatus.BAD_REQUEST));
 
     it('saves new room in a store', async () => {
@@ -81,7 +80,7 @@ describe('POST /rooms/:roomName/messages', () => {
   let app: NestApplication, roomsRepo: RoomsInmemoryRepository;
   let redisContainer: StartedTestContainer;
   beforeAll(async () => {
-    redisContainer = await new GenericContainer('redis')
+    redisContainer = await new GenericContainer('redis:7.0.11')
       .withExposedPorts(6379)
       .start();
   });
@@ -112,7 +111,7 @@ describe('POST /rooms/:roomName/messages', () => {
 
   it('has status OK if content exists, saves it to database', async () => {
     const content = 'Come back Alice!!!';
-    await req()
+    return await req()
       .post('/rooms/general/messages')
       .send({ content, userName: 'Bob' })
       .expect(HttpStatus.CREATED)
@@ -129,4 +128,8 @@ describe('POST /rooms/:roomName/messages', () => {
       .post('/rooms/general/messages')
       .send({ content: 'Hi Alice' })
       .expect(HttpStatus.BAD_REQUEST));
+
+  afterAll(async () => {
+    await redisContainer.stop();
+  });
 });
