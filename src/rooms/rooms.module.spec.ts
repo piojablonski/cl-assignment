@@ -6,6 +6,8 @@ import { RoomsModule } from './rooms.module';
 import { RoomsInmemoryRepository } from './infrastructure/rooms-inmemory.repository';
 import { RoomsRepository } from './application/rooms.repository';
 import { createFakeChat, createFakeRooms } from './test/fake-data';
+import { BullModule } from '@nestjs/bull';
+import { GenericContainer, StartedTestContainer } from 'testcontainers';
 
 describe('Rooms module', () => {
   let app: NestApplication, roomsRepo: RoomsInmemoryRepository;
@@ -74,26 +76,57 @@ describe('Rooms module', () => {
           expect(got).toHaveLength(10);
         }));
   });
-
-  describe('POST /rooms/:roomName/messages', () => {
-    it('has status OK if content exists, saves it to database', async () => {
-      const content = 'Come back Alice!!!';
-      await req()
-        .post('/rooms/general/messages')
-        .send({ content, userName: 'Bob' })
-        .expect(HttpStatus.CREATED);
-
-      const got = roomsRepo.rooms
-        .find((s) => s.name === 'general')
-        .messages.map((m) => m.content);
-
-      expect(got).toEqual(expect.arrayContaining([content]));
-    });
-
-    it('has status BAD REQUEST in case userName is missing', () =>
-      req()
-        .post('/rooms/general/messages')
-        .send({ content: 'Hi Alice' })
-        .expect(HttpStatus.BAD_REQUEST));
+});
+describe('POST /rooms/:roomName/messages', () => {
+  let app: NestApplication, roomsRepo: RoomsInmemoryRepository;
+  let redisContainer: StartedTestContainer;
+  beforeAll(async () => {
+    redisContainer = await new GenericContainer('redis')
+      .withExposedPorts(6379)
+      .start();
   });
+  beforeEach(async () => {
+    const host = redisContainer.getHost();
+    const port = redisContainer.getMappedPort(6379);
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        BullModule.forRoot({
+          redis: {
+            host,
+            port,
+          },
+        }),
+        RoomsModule,
+      ],
+    })
+      .overrideProvider(RoomsRepository)
+      .useValue(new RoomsInmemoryRepository(createFakeRooms()))
+      .compile();
+    roomsRepo = module.get<RoomsInmemoryRepository>(RoomsRepository);
+
+    app = module.createNestApplication();
+
+    await app.init();
+  });
+  const req = () => request(app.getHttpServer());
+
+  it('has status OK if content exists, saves it to database', async () => {
+    const content = 'Come back Alice!!!';
+    await req()
+      .post('/rooms/general/messages')
+      .send({ content, userName: 'Bob' })
+      .expect(HttpStatus.CREATED);
+
+    const got = roomsRepo.rooms
+      .find((s) => s.name === 'general')
+      .messages.map((m) => m.content);
+
+    expect(got).toEqual(expect.arrayContaining([content]));
+  });
+
+  it('has status BAD REQUEST in case userName is missing', () =>
+    req()
+      .post('/rooms/general/messages')
+      .send({ content: 'Hi Alice' })
+      .expect(HttpStatus.BAD_REQUEST));
 });
