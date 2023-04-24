@@ -31,19 +31,17 @@ $ npm run start:dev
 - application is available on http://localhost:3000
 - api documentation is available on http://localhost:3000/api
 
-## Building and running for production
+## Building and running using docker compose
 
 ```bash
-
-docker build -t colkie-assignment .
 
 # run the application on default port 3000
 # application is available on http://localhost:3000
 # api documentation is available on http://localhost:3000/api
-docker run -d -p 3000:3000 colkie-assignment
+$ docker compose up -d
 
 # check if app is up and running
-curl http://localhost:3000/healthz
+$ curl http://localhost:3000/healthz
 ```
 
 ## Running automated tests
